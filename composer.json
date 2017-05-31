@@ -1,0 +1,7 @@
+{
+    "name": "wikifab/SemanticJsonExport",
+    "description": "Mediawiki extension to get semantic page content in Json format",
+    "type": "mediawiki-extension",
+    "require": {
+    }
+}
