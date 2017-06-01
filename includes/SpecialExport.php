@@ -127,6 +127,14 @@ class SpecialExport extends SpecialPage {
 		header( "Content-type: $mimetype; charset=UTF-8" );
 
 		$this->export_controller = new ExportController( $serializer );
+
+		$fieldsToParse = $wgRequest->getText( 'fieldsToParse' );
+		if ( $fieldsToParse === '' ) {
+			$fieldsToParse = $wgRequest->getVal( 'fieldsToParse' );
+		}
+		$fieldsToParse = explode(',', $fieldsToParse);
+
+		$this->export_controller->setFieldsToParse($fieldsToParse);
 	}
 
 	/**

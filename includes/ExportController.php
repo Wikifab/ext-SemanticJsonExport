@@ -54,6 +54,8 @@ class ExportController {
 	 */
 	protected $outputfile;
 
+	protected $fieldsToParse = [];
+
 	/**
 	 * @var DeepRedirectTargetResolver
 	 */
@@ -67,6 +69,11 @@ class ExportController {
 	public function __construct( SerializerJson $serializer ) {
 		$this->serializer = $serializer;
 		$this->outputfile = null;
+	}
+
+	public function setFieldsToParse($fields) {
+
+		$this->fieldsToParse = $fields;
 	}
 
 	/**
@@ -144,8 +151,25 @@ class ExportController {
 
 		$data = $this->parseAllTemplatesFields($preloadContent);
 
+		//for fields : parse any wikitext :
+		$this->parseWikitextFieldToHtml($data);
+
 		$this->serializer->addPage($title, $pageInfo, $data);
 
+	}
+
+	protected function parseWikitextFieldToHtml(& $data) {
+
+		if (! $this->fieldsToParse) {
+			return;
+		}
+		foreach ($data as $key => $val) {
+			if($val && is_string($val) && in_array($key, $this->fieldsToParse)) {
+				$data[$key] = WikitextParser::parse($val);
+			} else if(is_array($val)) {
+				$this->parseWikitextFieldToHtml($data[$key]);
+			}
+		}
 	}
 
 	protected function parseAllTemplatesFields($pageContent) {

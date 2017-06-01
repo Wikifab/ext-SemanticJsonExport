@@ -77,7 +77,9 @@ class SerializerJson  {
 		$page = array_merge($page,$pageInfo);
 
 		$page['content'] = $additionalData;
+
 		$this->pages[] = $page;
+
 
 		$this->addPageInBuffer($page);
 	}
@@ -95,6 +97,9 @@ class SerializerJson  {
 			}
 			if(count($values) == 1) {
 				$values = array_pop($values);
+				if ($property->getKey() == 'Introduction' && is_string($values)) {
+					$values = "<html>$$values</value>";
+				}
 			}
 			$result[$property->getKey()] = $values;
 		}

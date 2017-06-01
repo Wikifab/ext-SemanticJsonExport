@@ -20,7 +20,8 @@
 	"AutoloadClasses": {
 		"Semanticjsonexport\\SpecialExport": "includes/SpecialExport.php",
 		"Semanticjsonexport\\SerializerJson": "includes/SerializerJson.php",
-		"Semanticjsonexport\\ExportController": "includes/ExportController.php"
+		"Semanticjsonexport\\ExportController": "includes/ExportController.php",
+		"Semanticjsonexport\\WikitextParser": "includes/WikitextParser.php"
 	},
 	"manifest_version": 1
 }
