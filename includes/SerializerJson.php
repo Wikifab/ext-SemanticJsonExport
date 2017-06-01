@@ -43,7 +43,7 @@ class SerializerJson  {
 	public function startSerialization() {
 		$this->isFinish = false;
 
-		$this->buffer = '{"result":[';
+		$this->buffer = '{"results":[';
 		$this->bufferContainPages = false;
 	}
 
@@ -64,6 +64,7 @@ class SerializerJson  {
 			$this->buffer .= ',';
 		}
 		$this->buffer .= json_encode($page);
+		$this->bufferContainPages  = true;
 	}
 
 	public function addPage(Title $title, $pageInfo, $additionalData) {

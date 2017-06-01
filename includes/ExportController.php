@@ -119,12 +119,22 @@ class ExportController {
 
 		$page = WikiPage::factory( $title );
 
+		$categoriesTitles = $page->getCategories();
+		$categories = [];
+		foreach ($categoriesTitles as $categoryTitle) {
+			$categories[] = [
+					'id' => $categoryTitle->getDBkey(),
+					'name' => $categoryTitle->getText()
+			];
+		}
+
 		$preloadContent = $page->getContent()->getWikitextForTransclusion();
 		$text = $page->getText();
 		$creator = $page->getCreator();
 
 		$pageInfo= [
-				'creator' => $creator->getName()
+				'creator' => $creator->getName(),
+				'categories' => $categories
 		];
 		// remplace template :
 		//$preloadContent  = str_replace('{{Tuto Details', '{{Tuto SearchResult', $preloadContent);
@@ -296,7 +306,11 @@ class ExportController {
 
 		// transform pages into queued short titles
 		foreach ( $pages as $page ) {
-			$title = Title::newFromText( $page );
+			if($page instanceof Title) {
+				$title = $page;
+			} else {
+				$title = Title::newFromText( $page );
+			}
 			if ( null === $title ) {
 				continue; // invalid title name given
 			}
