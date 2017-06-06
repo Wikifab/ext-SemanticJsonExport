@@ -174,12 +174,14 @@ class ExportController {
 
 	protected function parseAllTemplatesFields($pageContent) {
 
+		// TODO : get thoses templates names dynamically
 		$templateToParse = [
 				'Tuto Details',
 				'Introduction',
 				'Materials',
 				'Tuto Step',
 				'Notes',
+				'WikiPage',
 		];
 		$multipleTemplates = [
 				'Tuto Step'
