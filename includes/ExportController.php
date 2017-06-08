@@ -181,6 +181,7 @@ class ExportController {
 				'Materials',
 				'Tuto Step',
 				'Notes',
+				'VideoIntro',
 				'WikiPage',
 		];
 		$multipleTemplates = [
