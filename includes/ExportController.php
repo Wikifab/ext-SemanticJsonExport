@@ -120,7 +120,6 @@ class ExportController {
 		$page = WikiPage::factory( $title );
 
 		$preloadContent = $page->getContent()->getWikitextForTransclusion();
-		$text = $page->getText();
 		$creator = $page->getCreator();
 
 		$pageInfo= [
