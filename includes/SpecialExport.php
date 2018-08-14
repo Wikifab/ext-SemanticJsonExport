@@ -51,8 +51,21 @@ class SpecialExport extends SpecialPage {
 			}
 		}
 
+		$category = $wgRequest->getVal( 'category' );
+		$categoriesList = $category ? [$category] : false;
+		if ( $categoriesList === false && $wgRequest->getCheck( 'categories' ) ) {
+			$categoryBlob = $wgRequest->getText( 'categories' );
+
+			if ( $categoryBlob !== '' ) {
+				$categoriesList = explode( "\n", $categoryBlob );
+			}
+		}
+
 		if ( $pages !== false ) {
 			$this->exportPages( $pages );
+			return;
+		} else if ($categoriesList) {
+			$this->exportPagesByCategories( $categoriesList );
 			return;
 		} else {
 			$offset = $wgRequest->getVal( 'offset' );
@@ -85,15 +98,9 @@ class SpecialExport extends SpecialPage {
 		$html = '<form name="tripleSearch" action="" method="POST">' . "\n" .
 					'<p>' . wfMessage( 'smw_exportrdf_docu' )->text() . "</p>\n" .
 					'<input type="hidden" name="postform" value="1"/>' . "\n" .
-					'<textarea name="pages" cols="40" rows="10"></textarea><br />' . "\n";
-
-		if ( $wgUser->isAllowed( 'delete' ) || $smwgAllowRecursiveExport ) {
-			$html .= '<input type="checkbox" name="recursive" value="1" id="rec">&#160;<label for="rec">' . wfMessage( 'smw_exportrdf_recursive' )->text() . '</label></input><br />' . "\n";
-		}
-
-		if ( $wgUser->isAllowed( 'delete' ) || $smwgExportBacklinks ) {
-			$html .= '<input type="checkbox" name="backlinks" value="1" default="true" id="bl">&#160;<label for="bl">' . wfMessage( 'smw_exportrdf_backlinks' )->text() . '</label></input><br />' . "\n";
-		}
+					'<textarea name="pages" cols="40" rows="10"></textarea><br />' . "\n" .
+					'<p>' . wfMessage( 'smw_semjsonexport_docu_categories' )->text() . "</p>\n" .
+					'<textarea name="categories" cols="40" rows="3"></textarea><br />' . "\n";
 
 		if ( $wgUser->isAllowed( 'delete' ) || $smwgExportAll ) {
 			$html .= '<br />';
@@ -120,6 +127,46 @@ class SpecialExport extends SpecialPage {
 		header( "Content-type: $mimetype; charset=UTF-8" );
 
 		$this->export_controller = new ExportController( $serializer );
+
+		$fieldsToParse = $wgRequest->getText( 'fieldsToParse' );
+		if ( $fieldsToParse === '' ) {
+			$fieldsToParse = $wgRequest->getVal( 'fieldsToParse' );
+		}
+		$fieldsToParse = explode(',', $fieldsToParse);
+
+		$this->export_controller->setFieldsToParse($fieldsToParse);
+	}
+
+	/**
+	 * Export all pages of given categories (limit of 100 pages by category).
+	 * @param array $categories containing the string names of categories to be exported
+	 */
+	protected function exportPagesByCategories( $categories ) {
+		global $wgServer, $wgScriptPath, $wgRequest;
+
+		$pages = [];
+		foreach ($categories as $catName) {
+			$category = \Category::newFromName($catName);
+			if($category) {
+				$pagesTitles = $category->getMembers(100);
+				foreach ($pagesTitles as $page) {
+					$pages[] = $page;
+				}
+			}
+		}
+
+		$date = $wgRequest->getText( 'date' );
+		if ( $date === '' ) {
+			$date = $wgRequest->getVal( 'date' );
+		}
+		if ( $date !== '' ) {
+			$timeint = strtotime( $date );
+			$stamp = date( "YmdHis", $timeint );
+			$date = $stamp;
+		}
+
+		$this->startExport();
+		$this->export_controller->printPages( $pages, 1, $date );
 	}
 
 	/**

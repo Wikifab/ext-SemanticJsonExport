@@ -1,10 +1,10 @@
 {
 	"name": "SemanticJsonExport",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"author": [
 		"Pierre Boutet"
 	],
-	"url": "https://github.com/wikifab",
+	"url": "https://github.com/Wikifab/ext-SemanticJsonExport",
 	"descriptionmsg": "semanticjsonexport-desc",
 	"license-name": "MIT",
 	"type": "other",
@@ -20,7 +20,8 @@
 	"AutoloadClasses": {
 		"Semanticjsonexport\\SpecialExport": "includes/SpecialExport.php",
 		"Semanticjsonexport\\SerializerJson": "includes/SerializerJson.php",
-		"Semanticjsonexport\\ExportController": "includes/ExportController.php"
+		"Semanticjsonexport\\ExportController": "includes/ExportController.php",
+		"Semanticjsonexport\\WikitextParser": "includes/WikitextParser.php"
 	},
 	"manifest_version": 1
 }

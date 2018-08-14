@@ -54,6 +54,8 @@ class ExportController {
 	 */
 	protected $outputfile;
 
+	protected $fieldsToParse = [];
+
 	/**
 	 * @var DeepRedirectTargetResolver
 	 */
@@ -67,6 +69,11 @@ class ExportController {
 	public function __construct( SerializerJson $serializer ) {
 		$this->serializer = $serializer;
 		$this->outputfile = null;
+	}
+
+	public function setFieldsToParse($fields) {
+
+		$this->fieldsToParse = $fields;
 	}
 
 	/**
@@ -119,11 +126,21 @@ class ExportController {
 
 		$page = WikiPage::factory( $title );
 
+		$categoriesTitles = $page->getCategories();
+		$categories = [];
+		foreach ($categoriesTitles as $categoryTitle) {
+			$categories[] = [
+					'id' => $categoryTitle->getDBkey(),
+					'name' => $categoryTitle->getText()
+			];
+		}
+
 		$preloadContent = $page->getContent()->getWikitextForTransclusion();
 		$creator = $page->getCreator();
 
 		$pageInfo= [
-				'creator' => $creator->getName()
+				'creator' => $creator->getName(),
+				'categories' => $categories
 		];
 		// remplace template :
 		//$preloadContent  = str_replace('{{Tuto Details', '{{Tuto SearchResult', $preloadContent);
@@ -133,18 +150,38 @@ class ExportController {
 
 		$data = $this->parseAllTemplatesFields($preloadContent);
 
+		//for fields : parse any wikitext :
+		$this->parseWikitextFieldToHtml($data);
+
 		$this->serializer->addPage($title, $pageInfo, $data);
 
 	}
 
+	protected function parseWikitextFieldToHtml(& $data) {
+
+		if (! $this->fieldsToParse) {
+			return;
+		}
+		foreach ($data as $key => $val) {
+			if($val && is_string($val) && in_array($key, $this->fieldsToParse)) {
+				$data[$key] = WikitextParser::parse($val);
+			} else if(is_array($val)) {
+				$this->parseWikitextFieldToHtml($data[$key]);
+			}
+		}
+	}
+
 	protected function parseAllTemplatesFields($pageContent) {
 
+		// TODO : get thoses templates names dynamically
 		$templateToParse = [
 				'Tuto Details',
 				'Introduction',
 				'Materials',
 				'Tuto Step',
 				'Notes',
+				'VideoIntro',
+				'WikiPage',
 		];
 		$multipleTemplates = [
 				'Tuto Step'
@@ -295,7 +332,11 @@ class ExportController {
 
 		// transform pages into queued short titles
 		foreach ( $pages as $page ) {
-			$title = Title::newFromText( $page );
+			if($page instanceof Title) {
+				$title = $page;
+			} else {
+				$title = Title::newFromText( $page );
+			}
 			if ( null === $title ) {
 				continue; // invalid title name given
 			}
