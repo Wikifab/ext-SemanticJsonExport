@@ -204,6 +204,12 @@ class ExportController {
 	 * @return Array
 	 */
 	protected function parseTemplateFields($templateName, $pageContent, $isMultiple = true) {
+		global $wgParser;
+		// set this is required, because parser is called in pageforms function,
+		// and it must be initialized first
+		$options = new \ParserOptions();
+		$wgParser->startExternalParse($title = null, $options, \Parser::OT_HTML, $clearState = true);
+
 		$search_pattern = '/{{' . $templateName . '\s*[\|}]/i';
 
 		$result = [ ];
