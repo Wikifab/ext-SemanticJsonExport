@@ -4,6 +4,7 @@ namespace Semanticjsonexport;
 use Title;
 use Revision;
 use WikiPage;
+use Hooks;
 
 /**
  * File holding the ExportController class that provides basic functions for
@@ -149,6 +150,9 @@ class ExportController {
 		//$semData = $this->getSemanticData($title, ( $recursiondepth == 0 ));
 
 		$data = $this->parseAllTemplatesFields($preloadContent);
+
+		// Hook to allow other extension to change data, or add info :
+		Hooks::run( 'SemanticJsonExportBeforeSerializePage', [ $title, &$data ]);
 
 		//for fields : parse any wikitext :
 		$this->parseWikitextFieldToHtml($data);
