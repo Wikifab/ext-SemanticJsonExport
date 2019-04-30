@@ -186,9 +186,13 @@ class ExportController {
 				'Notes',
 				'VideoIntro',
 				'WikiPage',
+				'PropertiesList',
+				'PropertyOptions'
 		];
 		$multipleTemplates = [
-				'Tuto Step'
+				'Tuto Step',
+				'PropertiesList',
+				'PropertyOptions'
 		];
 		$result = [];
 		foreach ($templateToParse as $templateName) {
