@@ -181,6 +181,7 @@ class ExportController {
 		$templateToParse = [
 				'Tuto Details',
 				'Introduction',
+				'Display title of',
 				'Materials',
 				'Tuto Step',
 				'Notes',
