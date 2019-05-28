@@ -117,11 +117,10 @@ class ExportController {
 	 * @param integer $recursiondepth specifying the depth of recursion
 	 */
 	protected function serializePage( Title $title, $recursiondepth = 1 ) {
-		global $wgScriptPath;
-		$url = $wgScriptPath."/api.php?action=ask&query=[[:".str_replace(' ', '_', $title->getText())."]]|?Display_title_of&format=json";
-		$out = \Http::get($url);
-		$displayTitle = json_decode($out, true);
-		$displayTitle = $displayTitle['query']['results'][$title->getText()]['printouts']['Complete'][0];
+		$api = new \ApiMain(new \FauxRequest(['action' => 'ask', 'query' => "[[:".str_replace(" ", "_", $title->getText())."]]|?Complete", 'format' => 'json']), true);
+		$api->execute();
+		$data = $api->getResult()->getResultData();
+		$displayTitle = $data['query']['results'][$title->getText()]['printouts']['Complete'][0];
 
 		if ( $this->isPageDone( $title, $recursiondepth ) ) {
 			return; // do not export twice
