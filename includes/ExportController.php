@@ -117,10 +117,10 @@ class ExportController {
 	 * @param integer $recursiondepth specifying the depth of recursion
 	 */
 	protected function serializePage( Title $title, $recursiondepth = 1 ) {
-		$api = new \ApiMain(new \FauxRequest(['action' => 'ask', 'query' => "[[:".str_replace(" ", "_", $title->getText())."]]|?Complete", 'format' => 'json']), true);
+		$api = new \ApiMain(new \FauxRequest(['action' => 'ask', 'query' => "[[:".str_replace(" ", "_", $title->getText())."]]|?Display_title_of", 'format' => 'json']), true);
 		$api->execute();
 		$data = $api->getResult()->getResultData();
-		$displayTitle = $data['query']['results'][$title->getText()]['printouts']['Complete'][0];
+		$displayTitle = $data['query']['results'][$title->getText()]['printouts']['Display title of'][0];
 
 		if ( $this->isPageDone( $title, $recursiondepth ) ) {
 			return; // do not export twice
