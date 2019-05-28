@@ -117,7 +117,8 @@ class ExportController {
 	 * @param integer $recursiondepth specifying the depth of recursion
 	 */
 	protected function serializePage( Title $title, $recursiondepth = 1 ) {
-		$url = "/dokit/w/api.php?action=ask&query=[[:".$title->getText()."]]|?Display title of&format=json";
+		global $wgScriptPath;
+		$url = $wgScriptPath."/api.php?action=ask&query=[[:".$title->getText()."]]|?Display title of&format=json";
 		$out = \Http::get($url);
 		$displayTitle = json_decode($out, true);
 		$displayTitle = $displayTitle['query']['results'][$title->getText()]['printouts']['Complete'][0];
