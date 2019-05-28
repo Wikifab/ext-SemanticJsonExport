@@ -118,7 +118,7 @@ class ExportController {
 	 */
 	protected function serializePage( Title $title, $recursiondepth = 1 ) {
 		global $wgScriptPath;
-		$url = $wgScriptPath."/api.php?action=ask&query=[[:".$title->getText()."]]|?Display title of&format=json";
+		$url = $wgScriptPath."/api.php?action=ask&query=[[:".str_replace(' ', '_', $title->getText())."]]|?Display title of&format=json";
 		$out = \Http::get($url);
 		$displayTitle = json_decode($out, true);
 		$displayTitle = $displayTitle['query']['results'][$title->getText()]['printouts']['Complete'][0];
