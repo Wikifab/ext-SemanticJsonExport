@@ -120,8 +120,9 @@ class ExportController {
 		$api = new \ApiMain(new \FauxRequest(['action' => 'ask', 'query' => "[[:".$title->getDBkey()."]]|?Display title of", 'format' => 'json']), true);
 		$api->execute();
 		$data = $api->getResult()->getResultData();
-		$displayTitle = $data['query']['results'][$title->getText()]['printouts']['Display title of'][0];
-		if($displayTitle == ""){
+		if($data['query']['results'][$title->getText()]['printouts']['Display title of'][0]){
+			$displayTitle = $data['query']['results'][$title->getText()]['printouts']['Display title of'][0];
+		} else {
 			$displayTitle = $title->getText();
 		}
 
