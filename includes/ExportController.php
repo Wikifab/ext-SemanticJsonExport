@@ -106,6 +106,7 @@ class ExportController {
 	 * @return the Display Title Of special property
 	 */
 	public static function getSMWPropertyDisplayTitleOf(Title $title){
+		$displayTitleOfProperty = "";
 		$store = \SMW\StoreFactory::getStore()->getSemanticData( \SMW\DIWikiPage::newFromTitle( $title ) );
 		$property = new DIProperty('_DTITLE');
 		$propertyValues = $store->getPropertyValues($property);
