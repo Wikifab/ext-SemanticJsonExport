@@ -1,6 +1,7 @@
 <?php
 namespace Semanticjsonexport;
 
+use SMW\DIProperty;
 use Title;
 use Revision;
 use WikiPage;
@@ -101,6 +102,21 @@ class ExportController {
 	}
 
 	/**
+	 * @param Title $title
+	 * @return the Display Title Of special property
+	 */
+	public static function getSMWPropertyDisplayTitleOf(Title $title){
+		$displayTitleOfProperty = "";
+		$store = \SMW\StoreFactory::getStore()->getSemanticData( \SMW\DIWikiPage::newFromTitle( $title ) );
+		$property = new DIProperty('_DTITLE');
+		$propertyValues = $store->getPropertyValues($property);
+		foreach ($propertyValues as $propertyValue){
+			$displayTitleOfProperty = $propertyValue->getSerialization();
+		}
+		return $displayTitleOfProperty;
+	}
+
+	/**
 	 * Serialize data associated to a specific page. This method works on the
 	 * level of pages, i.e. it serialises parts of SMW content and implements
 	 * features like recursive export or backlinks that are available for this
@@ -117,6 +133,10 @@ class ExportController {
 	 * @param integer $recursiondepth specifying the depth of recursion
 	 */
 	protected function serializePage( Title $title, $recursiondepth = 1 ) {
+		$displayTitleOfProperty = self::getSMWPropertyDisplayTitleOf($title);
+		if($displayTitleOfProperty == ""){
+			$displayTitleOfProperty = $title->getText();
+		}
 
 		if ( $this->isPageDone( $title, $recursiondepth ) ) {
 			return; // do not export twice
@@ -141,7 +161,8 @@ class ExportController {
 
 		$pageInfo= [
 				'creator' => $creator->getName(),
-				'categories' => $categories
+				'categories' => $categories,
+				'Display title of' => $displayTitleOfProperty
 		];
 		// remplace template :
 		//$preloadContent  = str_replace('{{Tuto Details', '{{Tuto SearchResult', $preloadContent);
