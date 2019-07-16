@@ -191,6 +191,9 @@ class ExportController {
 			if($val && is_string($val) && in_array($key, $this->fieldsToParse)) {
 				$data[$key] = WikitextParser::parse($val);
 			} else if(is_array($val)) {
+                if ($val['Step_Content']) {
+                    $data[$key]['Step_Content'] = WikitextParser::parse($val['Step_Content']);
+                }
 				$this->parseWikitextFieldToHtml($data[$key]);
 			}
 		}
