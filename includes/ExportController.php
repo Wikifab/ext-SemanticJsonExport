@@ -6,6 +6,7 @@ use Title;
 use Revision;
 use WikiPage;
 use Hooks;
+use WikifabExploreResultFormatter;
 
 /**
  * File holding the ExportController class that provides basic functions for
@@ -58,6 +59,8 @@ class ExportController {
 
 	protected $fieldsToParse = [];
 
+	protected $addImageInfo = false;
+
 	/**
 	 * @var DeepRedirectTargetResolver
 	 */
@@ -76,6 +79,11 @@ class ExportController {
 	public function setFieldsToParse($fields) {
 
 		$this->fieldsToParse = $fields;
+	}
+
+	public function setAddImagesInfo($value)
+	{
+		$this->addImageInfo = $value;
 	}
 
 	/**
@@ -178,8 +186,32 @@ class ExportController {
 		//for fields : parse any wikitext :
 		$this->parseWikitextFieldToHtml($data);
 
+		// this will add full url of all images
+		if ($this->addImageInfo) {
+			$this->addImagesURL($data);
+		}
+
 		$this->serializer->addPage($title, $pageInfo, $data);
 
+	}
+
+	protected function addImagesURL(& $data)
+	{
+		if ($data['Tuto Details']['Main_Picture'] && !$data['Tuto Details']['Main_Picture_annotation']) {
+			$data['Tuto Details']['Main_Picture_URL'] = WikifabExploreResultFormatter::getImageUrl($data['Tuto Details']['Main_Picture']);
+		}
+		foreach ($data['Tuto Step'] as $key => $val) {
+			$iteration = 0;
+			while (true) {
+                		$pictureNumber = sprintf( 'Step_Picture_%02d', $iteration ) ;
+                		if ($val[$pictureNumber] && !$val[$pictureNumber.'_annotation']) {
+					$data['Tuto Step'][$key][$pictureNumber.'_URL'] = WikifabExploreResultFormatter::getImageUrl($data['Tuto Step'][$key][$pictureNumber]);
+				} else {
+					break;
+				}
+				$iteration++;
+			}
+		}
 	}
 
 	protected function parseWikitextFieldToHtml(& $data) {

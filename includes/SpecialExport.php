@@ -135,6 +135,10 @@ class SpecialExport extends SpecialPage {
 		$fieldsToParse = explode(',', $fieldsToParse);
 
 		$this->export_controller->setFieldsToParse($fieldsToParse);
+
+		if ($wgRequest->getCheck( 'imagesInfo' ) ) {
+            		$this->export_controller->setAddImagesInfo(true);
+		}
 	}
 
 	/**
